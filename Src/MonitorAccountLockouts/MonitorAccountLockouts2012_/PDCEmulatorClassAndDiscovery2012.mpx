@@ -1,20 +1,20 @@
-﻿<ManagementPackFragment SchemaVersion="2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+﻿<ManagementPackFragment SchemaVersion="SM2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <TypeDefinitions>
     <EntityTypes>
       <ClassTypes>
-        <ClassType ID="SCOM.MonitorAccountLockouts.2016.Class.PDCEmulator" Base="Windows!Microsoft.Windows.ApplicationComponent" Accessibility="Public" Abstract="false" Hosted="true" Singleton="false" >
+        <ClassType ID="SCOM.MonitorAccountLockouts.2012.Class.PDCEmulator" Base="Windows!Microsoft.Windows.ApplicationComponent" Accessibility="Public" Abstract="false" Hosted="true" Singleton="false" >
           <Property ID="Hostname" Key="true" Type ="string"/>
         </ClassType>
       </ClassTypes>
       <RelationshipTypes>
-        <RelationshipType ID="SCOM.MonitorAccountLockouts.2016.DomainControllerRoleHostsPDCEmulator" Accessibility="Public" Abstract="false" Base="System!System.Hosting">
-          <Source ID="Source" Type="MWSA2D!Microsoft.Windows.Server.2016.AD.DomainControllerRole" />
-          <Target ID="Target" Type="SCOM.MonitorAccountLockouts.2016.Class.PDCEmulator" />
+        <RelationshipType ID="SCOM.MonitorAccountLockouts.2012.DomainControllerRoleHostsPDCEmulator" Accessibility="Public" Abstract="false" Base="System!System.Hosting">
+          <Source ID="Source" Type="MWSA2D!Microsoft.Windows.Server.2012.AD.DomainControllerRole" />
+          <Target ID="Target" Type="SCOM.MonitorAccountLockouts.2012.Class.PDCEmulator" />
         </RelationshipType>
       </RelationshipTypes>
     </EntityTypes>
     <ModuleTypes>
-      <DataSourceModuleType ID="SCOM.MonitorAccountLockouts.2016.DataSource.PDCEmulatorDiscovery" Accessibility="Public" Batching="false">
+      <DataSourceModuleType ID="SCOM.MonitorAccountLockouts.2012.DataSource.PDCEmulatorDiscovery" Accessibility="Public" Batching="false">
         <Configuration>
           <xsd:element name="IntervalSeconds" type="xsd:integer" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
           <xsd:element name="SyncTime" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
@@ -99,11 +99,11 @@
                   $Description = "This domain controller is a PDC Emulator. Creating Discovery data." 
                   New-ScriptEvent -EventID 2022 -Description $Description
 
-                  $instance = $DiscoveryData.CreateClassInstance("$MPElement[Name='SCOM.MonitorAccountLockouts.2016.Class.PDCEmulator']$")
+                  $instance = $DiscoveryData.CreateClassInstance("$MPElement[Name='SCOM.MonitorAccountLockouts.2012.Class.PDCEmulator']$")
                   $instance.AddProperty("$MPElement[Name='Windows!Microsoft.Windows.Computer']/PrincipalName$", $ComputerName)
                   $instance.AddProperty("$MPElement[Name='System!System.Entity']/DisplayName$", $ComputerName)
                   $instance.AddProperty("$MPElement[Name='MWSACL!Microsoft.Windows.Server.AD.Library.DomainControllerRole']/Name$", ($Env:ComputerName))
-                  $instance.AddProperty("$MPElement[Name='SCOM.MonitorAccountLockouts.2016.Class.PDCEmulator']/Hostname$", $ComputerName)
+                  $instance.AddProperty("$MPElement[Name='SCOM.MonitorAccountLockouts.2012.Class.PDCEmulator']/Hostname$", $ComputerName)
                   $DiscoveryData.AddInstance($instance)
                   $DiscoveryData
                   
@@ -152,13 +152,13 @@
   </TypeDefinitions>
   <Monitoring>
     <Discoveries>
-      <Discovery ID="SCOM.MonitorAccountLockouts.2016.Discovery.PDCEmulator" Target="MWSA2D!Microsoft.Windows.Server.2016.AD.DomainControllerRole" Enabled="true" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+      <Discovery ID="SCOM.MonitorAccountLockouts.2012.Discovery.PDCEmulator" Target="MWSA2D!Microsoft.Windows.Server.2012.AD.DomainControllerRole" Enabled="true" ConfirmDelivery="false" Remotable="true" Priority="Normal">
         <Category>Discovery</Category>
         <DiscoveryTypes>
-          <DiscoveryClass TypeID="SCOM.MonitorAccountLockouts.2016.Class.PDCEmulator">
+          <DiscoveryClass TypeID="SCOM.MonitorAccountLockouts.2012.Class.PDCEmulator">
           </DiscoveryClass>
         </DiscoveryTypes>
-        <DataSource ID="DS" TypeID="SCOM.MonitorAccountLockouts.2016.DataSource.PDCEmulatorDiscovery">
+        <DataSource ID="DS" TypeID="SCOM.MonitorAccountLockouts.2012.DataSource.PDCEmulatorDiscovery">
           <IntervalSeconds>86333</IntervalSeconds>
           <SyncTime></SyncTime>
           <TimeoutSeconds>120</TimeoutSeconds>
@@ -170,21 +170,21 @@
   <LanguagePacks>
     <LanguagePack ID="ENU" IsDefault="true">
       <DisplayStrings>
-        <DisplayString ElementID="SCOM.MonitorAccountLockouts.2016.Class.PDCEmulator">
-          <Name>PDC Emulator 2016 and Above</Name>
-          <Description>PDC Emulator FSMO Role on 2016 and Above Domain Controller</Description>
+        <DisplayString ElementID="SCOM.MonitorAccountLockouts.2012.Class.PDCEmulator">
+          <Name>PDC Emulator 2012</Name>
+          <Description>PDC Emulator FSMO Role on 2012 Domain Controller</Description>
         </DisplayString>
-        <DisplayString ElementID="SCOM.MonitorAccountLockouts.2016.Class.PDCEmulator" SubElementID="Hostname">
+        <DisplayString ElementID="SCOM.MonitorAccountLockouts.2012.Class.PDCEmulator" SubElementID="Hostname">
           <Name>Hostname</Name>
           <Description>PDC Emulator Hostname</Description>
         </DisplayString>
-        <DisplayString ElementID="SCOM.MonitorAccountLockouts.2016.DataSource.PDCEmulatorDiscovery">
+        <DisplayString ElementID="SCOM.MonitorAccountLockouts.2012.DataSource.PDCEmulatorDiscovery">
           <Name>PDC Emulator Powershell DataSource</Name>
           <Description>PDC Emulator Powershell DataSource</Description>
         </DisplayString>
-        <DisplayString ElementID="SCOM.MonitorAccountLockouts.2016.Discovery.PDCEmulator">
-          <Name>PDC Emulator 2016 and Above Discovery</Name>
-          <Description>Discovery for PDC Emulator FSMO Role on 2016 and Above Domain Controller</Description>
+        <DisplayString ElementID="SCOM.MonitorAccountLockouts.2012.Discovery.PDCEmulator">
+          <Name>PDC Emulator 2012 Discovery</Name>
+          <Description>Discovery for PDC Emulator FSMO Role on 2012 Domain Controller</Description>
         </DisplayString>
       </DisplayStrings>
     </LanguagePack>

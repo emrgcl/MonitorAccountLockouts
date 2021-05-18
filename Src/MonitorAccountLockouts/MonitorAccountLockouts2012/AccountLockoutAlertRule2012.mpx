@@ -1,0 +1,347 @@
+﻿<ManagementPackFragment SchemaVersion="2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <TypeDefinitions>
+    <ModuleTypes>
+      <DataSourceModuleType ID="SCOM.MonitorAccountLockouts.2012.DataSource.AcountLockoutAlertRule" Accessibility="Internal" Batching="false">
+        <Configuration>
+          <xsd:element minOccurs="1" type="xsd:integer" name="IntervalSeconds" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element minOccurs="0" type="xsd:string" name="SyncTime" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element minOccurs="1" type="xsd:integer" name="TimeoutSeconds" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="Debug" type="xsd:boolean" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+        </Configuration>
+        <OverrideableParameters>
+          <OverrideableParameter ID="IntervalSeconds" Selector="$Config/IntervalSeconds$" ParameterType="int" />
+          <OverrideableParameter ID="SyncTime" Selector="$Config/SyncTime$" ParameterType="string" />
+          <OverrideableParameter ID="TimeoutSeconds" Selector="$Config/TimeoutSeconds$" ParameterType="int" />
+          <OverrideableParameter ID="Debug" Selector="$Config/Debug$" ParameterType="bool" />
+        </OverrideableParameters>
+        <ModuleImplementation Isolation="Any">
+          <Composite>
+            <MemberModules>
+              <DataSource ID="Scheduler" TypeID="System!System.Scheduler">
+                <Scheduler>
+                  <SimpleReccuringSchedule>
+                    <Interval Unit="Seconds">$Config/IntervalSeconds$</Interval>
+                    <SyncTime>$Config/SyncTime$</SyncTime>
+                  </SimpleReccuringSchedule>
+                  <ExcludeDates />
+                </Scheduler>
+              </DataSource>
+              <ProbeAction ID="PA" TypeID="Windows!Microsoft.Windows.PowerShellPropertyBagProbe">
+                <ScriptName>ScomNewAccountLockoutEvent.ps1</ScriptName>
+                <ScriptBody>
+                  <![CDATA[
+                  <#
+                  .SYNOPSIS
+                      Gets the Locked Accounts on the dc and finds the source of the lockedout.
+                  .DESCRIPTION
+                      Gets the Locked Accounts on the dc and finds the source of the lockedout.
+                  .EXAMPLE
+                      .\ScomNewAccountLockoutEvent.ps1 -verbose
+    
+                      VERBOSE: [2/25/2021 10:21:38 AM] Script Started.
+                      VERBOSE: [2/25/2021 10:21:38 AM] Locked Account Count = 2.
+                      VERBOSE: [2/25/2021 10:21:38 AM] Working on testuser@contoso.com
+
+
+                      Name                   : testuser
+                      DistinguishedName      : CN=testuser,CN=Users,DC=contoso,DC=com
+                      UserPrincipalName      : testuser@contoso.com
+                      SamAccountName         : testuser
+                      SID                    : S-1-5-21-1615164016-501832016-2065208324-2101
+                      LockedOut              : True
+                      LockedOutCount         : 3
+                      LockedTime             : 2/25/2021 10:04:10 AM
+                      LastLockedFromComputer : emreg-dc01
+                      LockedFromComputers    : {emreg-dc01, emreg-web01}
+
+                      VERBOSE: [2/25/2021 10:21:40 AM] Finished Working on testuser@contoso.com . LastLockedFromComputer = emreg-dc01 ; Last LockTime = 02/25/2021 10:04:10
+                      VERBOSE: [2/25/2021 10:21:40 AM] Working on baduser@contoso.com
+                      Name                   : User
+                      DistinguishedName      : CN=User,CN=Users,DC=contoso,DC=com
+                      UserPrincipalName      : baduser@contoso.com
+                      SamAccountName         : baduser
+                      SID                    : S-1-5-21-1615164016-501832016-2065208324-43601
+                      LockedOut              : True
+                      LockedOutCount         : 3
+                      LockedTime             : 2/25/2021 10:04:09 AM
+                      LastLockedFromComputer : emreg-dc01
+                      LockedFromComputers    : {emreg-dc01, emreg-web01}
+
+                      VERBOSE: [2/25/2021 10:21:41 AM] Finished Working on baduser@contoso.com . LastLockedFromComputer = emreg-dc01 ; Last LockTime = 02/25/2021 10:04:09
+                      VERBOSE: [2/25/2021 10:21:41 AM] Script Ended.
+                      VERBOSE: [2/25/2021 10:21:41 AM] Script Ended.Duration: 3 seconds.
+
+                  #>
+                  [CmdLetBinding()]
+                  Param(
+                  $ScriptDebug,
+                  [switch]$TestOnly
+                  )
+                  #Requires -Module @{ModuleName='ActiveDirectory';ModuleVersion ='1.0.0.0'}
+
+                  Function New-ScriptEvent {
+
+                  [CmdletBinding()]
+                  Param(
+
+                  $EventID,
+                  [ValidateSet('Error','Warning','Information')]
+                  $Severity,
+                  $Description
+
+                  )
+
+                  if ($DebugLog -or $Severity -eq 'Error') { 
+
+                  $SeverityID = switch ($Severity)
+                  {
+                      'Error' {1}
+                      'Warning' {2}
+                      'Information' {4}
+                      Default {4}
+                  }
+
+                  $LogApi = New-Object -comObject MOM.ScriptAPI
+                  $LogApi.LogScriptEvent($ScriptName,$EventID,$SeverityID,$Description)
+
+
+                  }
+                  }
+
+                  $ScriptStart = Get-Date
+                  Write-Verbose -Message "[$(Get-Date -format G)] Script Started."
+
+                  
+                  $StartTime = Get-Date
+                  $ScriptName = 'ScomNewAccountLockoutEvent.ps1'
+                  $DebugLog = [Boolean]$ScriptDebug
+                  
+                  try{
+                    
+                  $LockedAccounts = Search-ADAccount -LockedOut -ErrorAction Stop 
+                  $momapi = New-Object -comObject MOM.ScriptAPI -ErrorAction Stop
+                  $Description = "`nLoaded com objects successfully. `nRunning as $(whoami)."  
+                  New-ScriptEvent -EventID 2021 -Description $Description
+
+                  }
+
+                  catch{
+
+                  $Description = "FATAL ERROR: Unable to load OperationsManager module or access domain. `n Terminating script. `n Error is: $($_.Exception.Message)."
+                  New-ScriptEvent -EventID 2030 -Description $Description -Severity Error
+
+                  }
+
+
+                                 
+                  $Description = "Locked Account Count = $($LockedAccounts.Count)."
+                  New-ScriptEvent -EventID 2022 -Description $Description
+                  if ($LockedAccounts) {
+                      $LockedAccountInfos = Foreach ($LockedAccount in $LockedAccounts) {
+
+                      
+                      $Description = "Working on $($LockedAccount.UserPrincipalName)"
+                      New-ScriptEvent -EventID 2023 -Description $Description
+                      $EventLogParams = @{
+
+                      'LogName' = 'Security'
+                      'FilterXPath' = "*[System[EventID=4740] and EventData[Data[@Name='TargetUserName']='$($LockedAccount.SAmAccountName)']]"
+
+                      }   
+
+                      $Events = @(Get-WinEvent @EventLogPArams)
+                      if ($Events) {
+                      $LastEvent = $Events | Sort-Object -Property Timecreated -Descending | Select-Object -first 1
+
+                      [PsCustomObject]@{
+
+                          Name = $LockedAccount.Name
+                          DistinguishedName= $LockedAccount.DistinguishedName
+                          UserPrincipalName= $LockedAccount.UserPrincipalName
+                          SamAccountName= $LockedAccount.SamAccountName
+                          SID= $LockedAccount.SID
+                          LockedOut= $LockedAccount.LockedOut
+                          LockedOutCount = $Events.Count
+                          LockedTime = $LastEvent.TimeCreated
+                          LastLockedFromComputer = $LastEvent.Properties[1].Value
+                          LockedFromComputers = @($Events | ForEach-Object {$_.Properties[1].Value} | Select-Object -Unique)
+                      }
+
+                      
+                      $Description = "Finished Working on $($LockedAccount.UserPrincipalName) . LastLockedFromComputer = $($LastEvent.Properties[1].Value) ; Last LockTime = $($LastEvent.TimeCreated)"
+                      New-ScriptEvent -EventID 2024 -Description $Description
+                      # Insert MomSCriptApi Below if needed.
+                  } else {
+
+                      $Description = "No events found on this DC skipping."
+                      New-ScriptEvent -EventID 2025 -Description $Description
+
+                      }
+                  }
+                  } else {
+
+                      $Description = "No Acconts are locked."
+                      New-ScriptEvent -EventID 2026 -Description $Description                  
+                  }
+
+
+                  
+
+                  Foreach ($LockedAccountInfo in $LockedAccountInfos) {
+
+                  $bag = $momapi.CreatePropertyBag()
+                  $bag.AddValue('Name',$LockedAccountInfo.Name)
+                  $bag.AddValue('DistinguishedName',$LockedAccountInfo.DistinguishedName)
+                  $bag.AddValue('UserPrincipalName',$LockedAccountInfo.UserPrincipalName)
+                  $bag.AddValue('SamAccountName',$LockedAccountInfo.SamAccountName)
+                  $bag.AddValue('SID',($LockedAccountInfo.SID).ToString())
+                  $bag.AddValue('LockedOut',$LockedAccountInfo.LockedOut)
+                  $bag.AddValue('LockedOutCount',$LockedAccountInfo.LockedOutCount)
+                  $bag.AddValue('LockedTime',($LockedAccountInfo.LockedTime).ToString())
+                  $bag.AddValue('LastLockedFromComputer',$LockedAccountInfo.LastLockedFromComputer)
+                  $bag.AddValue('LockedFromComputers',($LockedAccountInfo.LockedFromComputers -Join ','))
+                  if ($TestOnly) {
+
+                  $momapi.Return($bag)
+
+                  } else {
+                  $bag
+                  }
+                  }
+                  
+                  $DurationSeconds = [Math]::Round(((Get-Date) - $ScriptStart).TotalSeconds,2)
+                  $Description = "Script Ended. Duration: $DurationSeconds seconds."
+                  New-ScriptEvent -EventID 2027 -Description $Description
+                ]]></ScriptBody>
+                  <Parameters>
+                  <Parameter>
+                    <Name>ScriptDebug</Name>
+                    <Value>$Config/Debug$</Value>
+                  </Parameter>
+                </Parameters>
+                <TimeoutSeconds>$Config/TimeoutSeconds$</TimeoutSeconds>
+              </ProbeAction>
+            </MemberModules>
+            <Composition>
+              <Node ID="PA">
+                <Node ID="Scheduler" />
+              </Node>
+            </Composition>
+          </Composite>
+        </ModuleImplementation>
+        <OutputType>System!System.PropertyBagData</OutputType>
+      </DataSourceModuleType>
+    </ModuleTypes>
+  </TypeDefinitions>
+  <Monitoring>
+    <Rules>
+      <Rule ID="SCOM.MonitorAccountLockouts.2012.Rule.AccountLockoutAlert" Enabled="true" Target="SCOM.MonitorAccountLockouts.2012.Class.PDCEmulator">
+        <Category>Custom</Category>
+        <DataSources>
+          <DataSource ID="DS" TypeID ="SCOM.MonitorAccountLockouts.2012.DataSource.AcountLockoutAlertRule">
+            <IntervalSeconds>300</IntervalSeconds>
+            <SyncTime />
+            <TimeoutSeconds>600</TimeoutSeconds>
+            <Debug>false</Debug>
+          </DataSource>
+        </DataSources>
+        <WriteActions>
+          <WriteAction ID="GenerateAlert" TypeID="Health!System.Health.GenerateAlert">
+            <Priority>1</Priority>
+            <Severity>2</Severity>
+            <AlertMessageId>$MPElement[Name="SCOM.MonitorAccountLockouts.2012.DataSource.AcountLockoutAlertRule_AlertMessageResourceID"]$</AlertMessageId>
+            <AlertParameters>
+              <AlertParameter1>$Data/Property[@Name='Name']$</AlertParameter1>
+              <AlertParameter2>$Data/Property[@Name='DistinguishedName']$</AlertParameter2>
+              <AlertParameter3>$Data/Property[@Name='UserPrincipalName']$</AlertParameter3>
+              <AlertParameter4>$Data/Property[@Name='SamAccountName']$</AlertParameter4>
+              <AlertParameter5>$Data/Property[@Name='SID']$</AlertParameter5>
+              <AlertParameter6>$Data/Property[@Name='LockedOut']$</AlertParameter6>
+              <AlertParameter7>$Data/Property[@Name='LockedOutCount']$</AlertParameter7>
+              <AlertParameter8>$Data/Property[@Name='LockedTime']$</AlertParameter8>
+              <AlertParameter9>$Data/Property[@Name='LastLockedFromComputer']$</AlertParameter9>
+              <AlertParameter10>$Data/Property[@Name='LockedFromComputers']$</AlertParameter10>
+            </AlertParameters>
+            <Suppression>
+              <SuppressionValue>$Data/Property[@Name='LastLockedFromComputer']$</SuppressionValue>
+              <SuppressionValue>$Data/Property[@Name='SID']$</SuppressionValue>
+              <SuppressionValue>$Data/Property[@Name='LockedTime']$</SuppressionValue>
+            </Suppression>
+          </WriteAction>
+        </WriteActions>
+      </Rule> 
+     
+       <Rule ID="SCOM.MonitorAccountLockouts.2012.Rule.AccountLockoutAlertNoSupression" Enabled="false" Target="SCOM.MonitorAccountLockouts.2012.Class.PDCEmulator">
+        <Category>Custom</Category>
+        <DataSources>
+          <DataSource ID="DS" TypeID ="SCOM.MonitorAccountLockouts.2012.DataSource.AcountLockoutAlertRule">
+            <IntervalSeconds>300</IntervalSeconds>
+            <SyncTime />
+            <TimeoutSeconds>600</TimeoutSeconds>
+            <Debug>false</Debug>
+          </DataSource>
+        </DataSources>
+        <WriteActions>
+          <WriteAction ID="GenerateAlert" TypeID="Health!System.Health.GenerateAlert">
+            <Priority>1</Priority>
+            <Severity>2</Severity>
+            <AlertMessageId>$MPElement[Name="SCOM.MonitorAccountLockouts.2012.DataSource.AcountLockoutAlertRule_AlertMessageResourceID"]$</AlertMessageId>
+            <AlertParameters>
+              <AlertParameter1>$Data/Property[@Name='Name']$</AlertParameter1>
+              <AlertParameter2>$Data/Property[@Name='DistinguishedName']$</AlertParameter2>
+              <AlertParameter3>$Data/Property[@Name='UserPrincipalName']$</AlertParameter3>
+              <AlertParameter4>$Data/Property[@Name='SamAccountName']$</AlertParameter4>
+              <AlertParameter5>$Data/Property[@Name='SID']$</AlertParameter5>
+              <AlertParameter6>$Data/Property[@Name='LockedOut']$</AlertParameter6>
+              <AlertParameter7>$Data/Property[@Name='LockedOutCount']$</AlertParameter7>
+              <AlertParameter8>$Data/Property[@Name='LockedTime']$</AlertParameter8>
+              <AlertParameter9>$Data/Property[@Name='LastLockedFromComputer']$</AlertParameter9>
+              <AlertParameter10>$Data/Property[@Name='LockedFromComputers']$</AlertParameter10>
+            </AlertParameters>
+          </WriteAction>
+        </WriteActions>
+      </Rule>      
+    </Rules>
+  </Monitoring>
+  <Presentation>
+    <StringResources>
+      <StringResource ID="SCOM.MonitorAccountLockouts.2012.DataSource.AcountLockoutAlertRule_AlertMessageResourceID"/>
+    </StringResources>
+  </Presentation>
+  <LanguagePacks>
+    <LanguagePack ID="ENU" IsDefault="true">
+      <DisplayStrings>
+        <DisplayString ElementID="SCOM.MonitorAccountLockouts.2012.DataSource.AcountLockoutAlertRule">
+          <Name>Account Lockout Rule DataSource</Name>
+          <Description>PowerShell DataSource for Account Lockout Rule</Description>
+        </DisplayString>
+        <DisplayString ElementID="SCOM.MonitorAccountLockouts.2012.Rule.AccountLockoutAlert">
+          <Name>Alert on Account Lockout</Name>
+          <Description>Alert on Account Lockout</Description>
+        </DisplayString>
+        <DisplayString ElementID="SCOM.MonitorAccountLockouts.2012.Rule.AccountLockoutAlertNoSupression">
+          <Name>Alert on Account Lockout - No suppression</Name>
+          <Description>Alert on Account Lockout - no suppression</Description>
+        </DisplayString>
+        <DisplayString ElementID="SCOM.MonitorAccountLockouts.2012.DataSource.AcountLockoutAlertRule_AlertMessageResourceID">
+          <Name>An Account Lockout is locked out.</Name>
+          <Description>
+            The following Account Lockout is locked out.
+            
+            Name: {0}
+            DistinguishedName: {1}
+            UserPrincipalName: {2}
+            SamAccountName: {3}
+            SID: {4}
+            LockedOut: {5}
+            LockedOutCount: {6}
+            LockedTime: {7}
+            LastLockedFromComputer: {8}
+            LockedFromComputers: {9}
+          </Description>
+        </DisplayString>
+      </DisplayStrings>
+    </LanguagePack>
+  </LanguagePacks>
+</ManagementPackFragment>

@@ -1,10 +1,10 @@
-﻿<ManagementPackFragment SchemaVersion="2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+﻿<ManagementPackFragment SchemaVersion="SM2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <LanguagePacks>
     <LanguagePack ID="ENU" IsDefault="true">
       <DisplayStrings>
         <DisplayString ElementID="SCOM.MonitorAccountLockouts.2016">
-          <Name>Monitor Account Lockouts 2016 and Above</Name>
-          <Description>Monitor Account Lockouts 2016 and Above</Description>
+          <Name>Monitor Account Lockouts 2016</Name>
+          <Description>Monitor Account Lockouts 2016</Description>
         </DisplayString>
       </DisplayStrings>
     </LanguagePack>

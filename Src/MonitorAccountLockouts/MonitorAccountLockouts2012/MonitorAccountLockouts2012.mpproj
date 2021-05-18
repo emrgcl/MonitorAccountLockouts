@@ -1,13 +1,13 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <ProjectGuid>{782be78d-a56f-4453-89e2-c01d4420a33d}</ProjectGuid>
+    <ProjectGuid>{aade16d9-4cad-43e9-8857-781ef3927b58}</ProjectGuid>
     <RootNamespace>SCOM.MonitorAccountLockouts.2012</RootNamespace>
     <Name>SCOM.MonitorAccountLockouts.2012</Name>
     <ManagementPackName>SCOM.MonitorAccountLockouts.2012</ManagementPackName>
-    <Version>1.0.0.0</Version>
+    <Version>1.0.0.30</Version>
     <MpFrameworkVersion>v7.0.2</MpFrameworkVersion>
-    <MpFrameworkProfile>SM</MpFrameworkProfile>
+    <MpFrameworkProfile>OM</MpFrameworkProfile>
     <ProductVersion>1.1.0.0</ProductVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -15,7 +15,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <GenerateSealed>True</GenerateSealed>
     <Company>EG</Company>
-    <Copyright>Copyright (c) EG. All rights reserved.</Copyright>
+    <Copyright>Copyright (c) Eg. All rights reserved.</Copyright>
     <DelaySigning>False</DelaySigning>
     <AssemblyOriginatorKeyFile>C:\Repos\MySecrets\mpkey\mpkey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
@@ -34,9 +34,7 @@
       <PackageToBundle>False</PackageToBundle>
     </ManagementPackReference>
     <ManagementPackReference Include="Microsoft.Windows.Library">
-      <HintPath>C:\Program Files (x86)\System Center Visual Studio Authoring Extensions\References\OM2012R2\Microsoft.Windows.Library.mp</HintPath>
       <Alias>Windows</Alias>
-      <MinVersion>7.5.8501.0</MinVersion>
       <PackageToBundle>False</PackageToBundle>
     </ManagementPackReference>
     <ManagementPackReference Include="Microsoft.Windows.Server.AD.2012.Discovery">
@@ -45,18 +43,29 @@
       <MinVersion>10.0.2.2</MinVersion>
       <PackageToBundle>False</PackageToBundle>
     </ManagementPackReference>
+    <ManagementPackReference Include="Microsoft.Windows.Server.AD.Class.Library">
+      <HintPath>C:\Program Files (x86)\System Center Management Packs\Microsoft System Center Management Pack for ADDS\Microsoft.Windows.Server.AD.Class.Library.mp</HintPath>
+      <Alias>MWSACL</Alias>
+      <MinVersion>10.0.2.2</MinVersion>
+      <PackageToBundle>False</PackageToBundle>
+    </ManagementPackReference>
     <ManagementPackReference Include="System.Health.Library">
-      <HintPath>C:\Program Files (x86)\System Center Visual Studio Authoring Extensions\References\OM2012R2\System.Health.Library.mp</HintPath>
       <Alias>Health</Alias>
-      <MinVersion>7.0.8433.0</MinVersion>
       <PackageToBundle>False</PackageToBundle>
     </ManagementPackReference>
     <ManagementPackReference Include="System.Library">
       <Alias>System</Alias>
       <PackageToBundle>False</PackageToBundle>
     </ManagementPackReference>
+    <ManagementPackReference Include="Microsoft.SystemCenter.Visualization.Library">
+      <Alias>Visualization</Alias>
+      <PackageToBundle>false</PackageToBundle>
+    </ManagementPackReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountLockoutAlertRule2012.mpx">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ManagementPack.mpx">
       <SubType>Code</SubType>
     </Compile>

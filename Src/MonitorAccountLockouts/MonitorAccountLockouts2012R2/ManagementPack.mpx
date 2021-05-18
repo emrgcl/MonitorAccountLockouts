@@ -2,9 +2,9 @@
   <LanguagePacks>
     <LanguagePack ID="ENU" IsDefault="true">
       <DisplayStrings>
-        <DisplayString ElementID="SCOM.MonitorAccountLockouts.2012">
-          <Name>Monitor Account Lockouts 2012</Name>
-          <Description>Monitor Account Lockouts 2012</Description>
+        <DisplayString ElementID="SCOM.MonitorAccountLockouts.2012R2">
+          <Name>Monitor Account Lockouts 2012R2</Name>
+          <Description>Monitor Account Lockouts 2012R2</Description>
         </DisplayString>
       </DisplayStrings>
     </LanguagePack>

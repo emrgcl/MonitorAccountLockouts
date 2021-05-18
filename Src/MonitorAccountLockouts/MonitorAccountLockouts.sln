@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{D4B43EB3-688B-4EEE-86BD-088F0B28ABB3}") = "MonitorAccountLockouts2012", "MonitorAccountLockouts2012\MonitorAccountLockouts2012.mpproj", "{782BE78D-A56F-4453-89E2-C01D4420A33D}"
+Project("{D4B43EB3-688B-4EEE-86BD-088F0B28ABB3}") = "MonitorAccountLockouts2012R2", "MonitorAccountLockouts2012R2\MonitorAccountLockouts2012R2.mpproj", "{A724A969-4901-44E2-B0A5-904152CBFD0D}"
 EndProject
-Project("{D4B43EB3-688B-4EEE-86BD-088F0B28ABB3}") = "MonitorAccountLockouts2016", "MonitorAccountLockouts2016\MonitorAccountLockouts2016.mpproj", "{3A97DCCD-312E-49BD-83B4-AFBC357B9C0F}"
+Project("{D4B43EB3-688B-4EEE-86BD-088F0B28ABB3}") = "MonitorAccountLockouts2012", "MonitorAccountLockouts2012\MonitorAccountLockouts2012.mpproj", "{AADE16D9-4CAD-43E9-8857-781EF3927B58}"
+EndProject
+Project("{D4B43EB3-688B-4EEE-86BD-088F0B28ABB3}") = "MonitorAccountLockouts2016", "MonitorAccountLockouts2016\MonitorAccountLockouts2016.mpproj", "{7D1DD525-09C1-43DB-B061-160C6FA2F782}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +15,18 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{782BE78D-A56F-4453-89E2-C01D4420A33D}.Debug|x86.ActiveCfg = Debug|x86
-		{782BE78D-A56F-4453-89E2-C01D4420A33D}.Debug|x86.Build.0 = Debug|x86
-		{782BE78D-A56F-4453-89E2-C01D4420A33D}.Release|x86.ActiveCfg = Release|x86
-		{782BE78D-A56F-4453-89E2-C01D4420A33D}.Release|x86.Build.0 = Release|x86
-		{3A97DCCD-312E-49BD-83B4-AFBC357B9C0F}.Debug|x86.ActiveCfg = Debug|x86
-		{3A97DCCD-312E-49BD-83B4-AFBC357B9C0F}.Debug|x86.Build.0 = Debug|x86
-		{3A97DCCD-312E-49BD-83B4-AFBC357B9C0F}.Release|x86.ActiveCfg = Release|x86
-		{3A97DCCD-312E-49BD-83B4-AFBC357B9C0F}.Release|x86.Build.0 = Release|x86
+		{A724A969-4901-44E2-B0A5-904152CBFD0D}.Debug|x86.ActiveCfg = Debug|x86
+		{A724A969-4901-44E2-B0A5-904152CBFD0D}.Debug|x86.Build.0 = Debug|x86
+		{A724A969-4901-44E2-B0A5-904152CBFD0D}.Release|x86.ActiveCfg = Release|x86
+		{A724A969-4901-44E2-B0A5-904152CBFD0D}.Release|x86.Build.0 = Release|x86
+		{AADE16D9-4CAD-43E9-8857-781EF3927B58}.Debug|x86.ActiveCfg = Debug|x86
+		{AADE16D9-4CAD-43E9-8857-781EF3927B58}.Debug|x86.Build.0 = Debug|x86
+		{AADE16D9-4CAD-43E9-8857-781EF3927B58}.Release|x86.ActiveCfg = Release|x86
+		{AADE16D9-4CAD-43E9-8857-781EF3927B58}.Release|x86.Build.0 = Release|x86
+		{7D1DD525-09C1-43DB-B061-160C6FA2F782}.Debug|x86.ActiveCfg = Debug|x86
+		{7D1DD525-09C1-43DB-B061-160C6FA2F782}.Debug|x86.Build.0 = Debug|x86
+		{7D1DD525-09C1-43DB-B061-160C6FA2F782}.Release|x86.ActiveCfg = Release|x86
+		{7D1DD525-09C1-43DB-B061-160C6FA2F782}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
