@@ -1,7 +1,7 @@
 # Monitor Account Lockouts
 Monitoring Account Lockouts using scom can be tricky. The default Event Log Data Source of SCOM cannot perform well especially on security logs on Domain Controllers. 
 
-The management pack can be [downloaded here](https://github.com/emrgcl/MonitorAccountLockouts/releases/download/1.0.0.30/SCOM.MonitorAccountLockouts_1.0.0.30.zip) and you can [click here for Installation steps](#Installation)
+The management pack can be [downloaded here](https://github.com/emrgcl/MonitorAccountLockouts/releases/download/1.0.0.30/SCOM.MonitorAccountLockouts_1.0.0.30.zip) and you can [click here for Installation steps](#Installation).
 
 # Purpose of this management pack
 
