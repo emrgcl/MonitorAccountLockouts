@@ -24,6 +24,7 @@ $EventLogParams = @{
 $Events = @(Get-WinEvent @EventLogPArams)
 ```
 # Requirements
+1. SCOM Agent must be Installed PDC Emulator Role
 1. **ActiveDirectory** Module installed on **PDC Emulator Role**. If you need to find out PDC Emulator Role on your environment before Installing the Management Pack run the following PowerShell line on any Domain controller.
     ```PowerShell
     (Get-ADDomain -ErrorAction stop).PDCEmulator
